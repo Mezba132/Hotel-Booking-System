@@ -3,10 +3,9 @@ import { RoomBookingService } from './room-booking.service';
 import { RoomBookingController } from './room-booking.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoomBook } from 'src/entities/room-book.entity';
-import { RoomManage } from 'src/entities/room-manage.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([RoomBook, RoomManage])],
+  imports: [TypeOrmModule.forFeature([RoomBook])],
   controllers: [RoomBookingController],
   providers: [RoomBookingService],
 })

@@ -10,8 +10,6 @@ export class RoomBookingService {
   constructor(
     @InjectRepository(RoomBook)
     private roomBookRepository: Repository<RoomBook>,
-    @InjectRepository(RoomManage)
-    private roomManageRepository: Repository<RoomManage>,
   ) {}
 
   create = async (body: CreateRoomBookingDto) => {
