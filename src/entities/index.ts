@@ -1,6 +1,7 @@
-import { RoomBooking } from './booking.entity';
+import { RoomBook } from './room-book.entity';
+import { RoomManage } from './room-manage.entity';
 import { User } from './user.entity';
 
-const entities = [User, RoomBooking];
+const entities = [User, RoomBook, RoomManage];
 
 export default entities;

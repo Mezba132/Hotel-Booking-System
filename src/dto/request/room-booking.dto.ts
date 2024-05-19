@@ -8,6 +8,7 @@ import {
   IsString,
   Matches,
 } from 'class-validator';
+import { User } from 'src/entities/user.entity';
 
 export class CreateRoomBookingDto {
   @IsNotEmpty()
@@ -30,8 +31,12 @@ export class CreateRoomBookingDto {
   phoneNumber: string;
 
   @IsOptional()
-  @IsNumber()
-  loggedUser: number;
+  @Type(() => User)
+  loggedUser: User;
+
+  @IsNotEmpty()
+  @IsArray()
+  selectedRoomIds: number[];
 
   @IsNotEmpty()
   @IsNumber()

@@ -11,6 +11,7 @@ import { UsersModule } from './users/users.module';
 import entities from 'src/entities';
 import { CheckTokenMiddleware } from './middleware/checkToken.middleware';
 import { RoomBookingModule } from './room-booking/room-booking.module';
+import { ManagingRoomsModule } from './managing-rooms/managing-rooms.module';
 
 @Module({
   imports: [
@@ -24,10 +25,12 @@ import { RoomBookingModule } from './room-booking/room-booking.module';
     AuthModule,
     UsersModule,
     RoomBookingModule,
+    ManagingRoomsModule,
   ],
   controllers: [],
   providers: [],
 })
+// export class AppModule {}
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer

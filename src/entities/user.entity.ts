@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { RoomBook } from './room-book.entity';
 
 @Entity()
 export class User {
@@ -19,6 +20,9 @@ export class User {
 
   @Column({ type: 'int' })
   age: number;
+
+  @OneToMany(() => RoomBook, (roomBook) => roomBook.loggedUser)
+  roomBooks: RoomBook[];
 
   @Column({ default: true })
   isActive: boolean;

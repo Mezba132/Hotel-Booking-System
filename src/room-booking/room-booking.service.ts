@@ -1,24 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { CreateRoomBookingDto } from '../dto/request/room-booking.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RoomBooking } from 'src/entities/booking.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+import { RoomBook } from 'src/entities/room-book.entity';
+import { RoomManage } from 'src/entities/room-manage.entity';
 
 @Injectable()
 export class RoomBookingService {
   constructor(
-    @InjectRepository(RoomBooking)
-    private bookingRepository: Repository<RoomBooking>,
+    @InjectRepository(RoomBook)
+    private roomBookRepository: Repository<RoomBook>,
+    @InjectRepository(RoomManage)
+    private roomManageRepository: Repository<RoomManage>,
   ) {}
 
   create = async (body: CreateRoomBookingDto) => {
     try {
-      await this.bookingRepository
-        .createQueryBuilder()
-        .insert()
-        .values(body)
-        .into(RoomBooking)
-        .execute();
+      let bookRooms = [];
+      let { selectedRoomIds, ...rest } = body;
+
+      if (selectedRoomIds && selectedRoomIds.length > 0) {
+        bookRooms = selectedRoomIds.map((id) => ({ ...new RoomManage(), id }));
+      }
+
+      rest.phoneNumber = rest.phoneNumber.slice(-11);
+      const data = { ...rest, bookRooms };
+
+      await this.roomBookRepository.save(data);
+
       return {
         success: true,
         message: 'Successfully Booked',
@@ -33,9 +42,33 @@ export class RoomBookingService {
 
   findAll = async () => {
     try {
-      const allInfo: any = await this.bookingRepository
+      const allInfo: any = await this.roomBookRepository
         .createQueryBuilder('booking')
-        .leftJoinAndSelect('booking.loggedUser', 'loggedUser')
+        .select([
+          'booking.id',
+          'booking.guestFullName',
+          'booking.email',
+          'booking.phoneNumber',
+          'booking.totalRoom',
+          'booking.totalPerson',
+          'booking.checkInDate',
+          'booking.checkOutDate',
+          'booking.isCheckedIn',
+          'booking.isCheckedOut',
+          'booking.isBookingCanceled',
+          'loggedUser.fullName',
+          'loggedUser.email',
+          'loggedUser.phone',
+          'bookRooms.roomNumber',
+          'bookRooms.roomInfo',
+          'bookRooms.price',
+        ])
+        .leftJoin('booking.bookRooms', 'bookRooms')
+        .leftJoin('booking.loggedUser', 'loggedUser')
+        .where('booking.isBookingCanceled = :isBookingCanceled', {
+          isBookingCanceled: false,
+        })
+        .orderBy('booking.id', 'ASC')
         .getMany();
       return {
         success: true,
@@ -50,17 +83,34 @@ export class RoomBookingService {
     }
   };
 
-  findOne = async (phone: string) => {
+  findByPhoneOrEmail = async (phoneOrEmail: string) => {
     try {
-      const singleInfo: any = await this.bookingRepository
+      const bookInfo: any = await this.roomBookRepository
         .createQueryBuilder('booking')
-        .leftJoinAndSelect('booking.loggedUser', 'loggedUser')
-        .where('booking.phoneNumber = :phone', { phone: phone })
+        .select([
+          'booking.id',
+          'booking.guestFullName',
+          'booking.email',
+          'booking.phoneNumber',
+          'booking.totalRoom',
+          'booking.totalPerson',
+          'booking.checkInDate',
+          'booking.checkOutDate',
+          'booking.isCheckedIn',
+          'booking.isCheckedOut',
+        ])
+        .leftJoin('booking.loggedUser', 'loggedUser')
+        .where('booking.phoneNumber = :phone', { phone: phoneOrEmail })
+        .orWhere('booking.email = :email', { email: phoneOrEmail })
+        .andWhere('booking.isBookingCanceled = :cancelbook', {
+          cancelbook: false,
+        })
+        .orderBy('booking.id', 'ASC')
         .getMany();
       return {
         success: true,
         message: 'Successfully Fetched single Information',
-        data: singleInfo,
+        data: bookInfo,
       };
     } catch (error) {
       return {
@@ -72,7 +122,7 @@ export class RoomBookingService {
 
   findById = async (id: number) => {
     try {
-      const singleInfo: any = await this.bookingRepository
+      const singleInfo: any = await this.roomBookRepository
         .createQueryBuilder('booking')
         .leftJoinAndSelect('booking.loggedUser', 'loggedUser')
         .where('booking.id = :id', { id })
@@ -92,9 +142,9 @@ export class RoomBookingService {
 
   updateCheckIn = async (id: number) => {
     try {
-      await this.bookingRepository
+      await this.roomBookRepository
         .createQueryBuilder()
-        .update(RoomBooking)
+        .update(RoomBook)
         .set({ isCheckedIn: true })
         .where('id = :id', { id })
         .execute();
@@ -113,9 +163,9 @@ export class RoomBookingService {
 
   updateCheckOut = async (id: number) => {
     try {
-      await this.bookingRepository
+      await this.roomBookRepository
         .createQueryBuilder()
-        .update(RoomBooking)
+        .update(RoomBook)
         .set({ isCheckedOut: true })
         .where('id = :id', { id })
         .execute();
@@ -134,9 +184,9 @@ export class RoomBookingService {
 
   updateCancelBooking = async (id: number) => {
     try {
-      await this.bookingRepository
+      await this.roomBookRepository
         .createQueryBuilder()
-        .update(RoomBooking)
+        .update(RoomBook)
         .set({ isBookingCanceled: true })
         .where('id = :id', { id })
         .execute();

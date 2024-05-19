@@ -5,11 +5,14 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { User } from './user.entity';
+import { RoomManage } from './room-manage.entity';
 
 @Entity()
-export class RoomBooking {
+export class RoomBook {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -43,9 +46,23 @@ export class RoomBooking {
   @Column({ default: false })
   isBookingCanceled: boolean;
 
-  @ManyToOne(() => User)
-  @JoinColumn()
-  loggedUser: number;
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'loggedUserId', referencedColumnName: 'id' })
+  loggedUser: User;
+
+  @ManyToMany(() => RoomManage, (manageRooms) => manageRooms.manageRooms)
+  @JoinTable({
+    name: 'room-book_room-manage',
+    joinColumn: {
+      name: 'roomBookId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'roomManageId',
+      referencedColumnName: 'id',
+    },
+  })
+  bookRooms: RoomManage[];
 
   @Column({ default: true })
   isActive: boolean;

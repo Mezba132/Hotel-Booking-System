@@ -39,8 +39,9 @@ export class RoomBookingController {
       properties: {
         guestFullName: { type: 'string', example: 'John Doe' },
         email: { type: 'string', example: 'johndoe@example.com' },
-        phoneNumber: { type: 'string', example: '+8801234567890' },
-        loggedUser: { type: 'number', example: 5 },
+        phoneNumber: { type: 'string', example: '01234567890' },
+        selectedRoomIds: { type: 'array', example: [1, 2] },
+        loggedUser: { type: 'number', example: 1 },
         totalRoom: { type: 'number', example: 2 },
         totalPerson: { type: 'number', example: 2 },
         checkInDate: { type: 'date', example: '2024-05-10' },
@@ -74,8 +75,8 @@ export class RoomBookingController {
     description: 'Successfully fetched bookings',
     status: 201,
   })
-  findOne(@Param('phone') phone: string) {
-    return this.roomBookingService.findOne(phone);
+  findByPhoneOrEmail(@Param('phoneOrEmail') phoneOrEmail: string) {
+    return this.roomBookingService.findByPhoneOrEmail(phoneOrEmail);
   }
 
   @Get('findbyId/:id')

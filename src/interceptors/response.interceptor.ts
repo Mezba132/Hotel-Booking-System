@@ -17,10 +17,11 @@ export interface Response<T> {
 
 @Injectable()
 export class CustomResponseInterceptor<T>
-  implements NestInterceptor<T, Response<T>> {
+  implements NestInterceptor<T, Response<T>>
+{
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      map(data => ({
+      map((data) => ({
         success: data.success,
         statusCode: context.switchToHttp().getResponse().statusCode,
         message: data.message,
