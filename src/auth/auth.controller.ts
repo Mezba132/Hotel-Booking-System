@@ -30,10 +30,11 @@ export class AuthController {
       type: 'object',
       properties: {
         fullName: { type: 'string', example: 'John Doe' },
-        email: { type: 'string', example: 'johndoe@example.com' },
+        email: { type: 'string', example: 'johndoe@mail.com' },
         age: { type: 'number', example: 30 },
-        phone: { type: 'string', example: '+8801234567890' },
-        password: { type: 'string', example: 'password123' },
+        gender: { type: 'string', example: 'male' },
+        phone: { type: 'string', example: '01234567890' },
+        password: { type: 'string', example: 'Pass##123' },
       },
     },
   })
@@ -55,8 +56,8 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        emailOrPhone: { type: 'string', example: 'johndoe@example.com' },
-        password: { type: 'string', example: 'password123' },
+        emailOrPhone: { type: 'string', example: 'johndoe@mail.com' },
+        password: { type: 'string', example: 'Pass##123' },
       },
     },
   })

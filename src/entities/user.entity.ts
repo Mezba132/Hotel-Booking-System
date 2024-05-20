@@ -1,5 +1,24 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  CreateDateColumn,
+} from 'typeorm';
 import { RoomBook } from './room-book.entity';
+
+export enum UserRole {
+  ADMIN = 'admin',
+  EDITOR = 'editor',
+  EMPLOYEE = 'employee',
+  USER = 'user',
+}
+
+export enum Gender {
+  MALE = 'male',
+  FEMALE = 'female',
+  OTHER = 'OTHER',
+}
 
 @Entity()
 export class User {
@@ -21,13 +40,29 @@ export class User {
   @Column({ type: 'int' })
   age: number;
 
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  refreshtoken: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: [UserRole.USER],
+  })
+  role: UserRole[];
+
+  @Column({
+    type: 'enum',
+    enum: Gender,
+  })
+  gender: Gender;
+
   @OneToMany(() => RoomBook, (roomBook) => roomBook.loggedUser)
   roomBooks: RoomBook[];
 
   @Column({ default: true })
   isActive: boolean;
 
-  @Column({ default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn()
   createdAt: Date;
 
   @Column({ nullable: true })
